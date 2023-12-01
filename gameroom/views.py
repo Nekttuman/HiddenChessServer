@@ -102,3 +102,57 @@ def user_check_opponent_move(request):
 
     else:
         return JsonResponse({'message': 'invalid request'}, status=400)
+
+@login_required
+def user_ready_info(request):
+    if request.method == "POST":
+        roomId = request.POST["room-id"]
+
+        room = GameRoom.objects.filter(id=roomId).first()
+        
+        userReadyValue = request.POST["user-ready"]
+        if userReadyValue == "true":
+            if room.creator.id == request.user.id:
+                print("creator ready")
+                room.isCreatorReady = True
+            else: 
+                print("opponent ready")
+                room.isOpponentReady = True
+        else:
+            if room.creator.id == request.user.id:
+                print("creator not ready")
+                room.isCreatorReady = False
+            else: 
+                print("opponent not ready")
+                room.isOpponentReady = False
+        print("yoy")
+        room.save()
+        
+        return JsonResponse({}, status=204)
+    else:
+        return JsonResponse({'message': 'invalid request'}, status=400)
+
+
+
+@login_required
+def opponent_ready_check(request):
+    if request.method == "POST":
+        roomId = request.POST["room-id"]
+
+        room = GameRoom.objects.filter(id=roomId).first()
+        
+        isOpponentReady = 'false'
+        if room.creator.id == request.user.id:
+            if room.isOpponentReady:
+                print(roomId, "op ready")
+                return JsonResponse({'message': 'opponent ready'})
+        else: 
+            if room.isCreatorReady:
+                print(roomId, "op ready")
+                return JsonResponse({'message': 'opponent ready'})
+
+        print(roomId, "op not ready")
+        return JsonResponse({'message': 'opponent not ready'})
+
+    else:
+        return JsonResponse({'message': 'invalid request'}, status=400)

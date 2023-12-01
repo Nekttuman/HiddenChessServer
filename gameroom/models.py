@@ -7,6 +7,8 @@ class GameRoom(models.Model):
     players = models.ManyToManyField(User, related_name='joined_game_rooms')
     password = models.CharField(max_length=50, blank=True, null=True)
     isActive = models.BooleanField(blank=False, default=False)
+    isCreatorReady = models.BooleanField(blank=False, default=False)
+    isOpponentReady = models.BooleanField(blank=False, default=False)
     lastMove = models.CharField(max_length=10, blank=True, null=True)  # Replace with appropriate field type
     lastMoveUser = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
 
